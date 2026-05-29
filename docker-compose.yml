@@ -1,0 +1,43 @@
+
+services:
+  mongo-primario:
+    image: mongo:7.0
+    container_name: mongo-primario
+    command: ["--replSet", "rs0", "--bind_ip_all"]
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-primario-data:/data/db
+    networks:
+      - mongo-cluster
+
+  mongo-secundario-1:
+    image: mongo:7.0
+    container_name: mongo-secundario-1
+    command: ["--replSet", "rs0", "--bind_ip_all"]
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongo-secundario-1-data:/data/db
+    networks:
+      - mongo-cluster
+
+  mongo-secundario-2:
+    image: mongo:7.0
+    container_name: mongo-secundario-2
+    command: ["--replSet", "rs0", "--bind_ip_all"]
+    ports:
+      - "27019:27017"
+    volumes:
+      - mongo-secundario-2-data:/data/db
+    networks:
+      - mongo-cluster
+
+networks:
+  mongo-cluster:
+    driver: bridge
+
+volumes:
+  mongo-primario-data:
+  mongo-secundario-1-data:
+  mongo-secundario-2-data:

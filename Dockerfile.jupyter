@@ -1,0 +1,9 @@
+FROM jupyter/scipy-notebook:latest
+
+USER root
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends docker.io \
+    && rm -rf /var/lib/apt/lists/*
+
+USER ${NB_UID}
+RUN pip install --no-cache-dir pymongo sentence-transformers

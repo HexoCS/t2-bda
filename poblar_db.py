@@ -3,16 +3,20 @@ import hashlib
 from pymongo import MongoClient
 from sentence_transformers import SentenceTransformer
 
+MONGO_URI = os.getenv(
+    "MONGO_URI",
+    "mongodb://mongo-primario:27017,mongo-secundario-1:27017,mongo-secundario-2:27017/?replicaSet=rs0"
+)
 
-MONGO_URI = "mongodb://localhost:27017/?directConnection=true"
-client = MongoClient(MONGO_URI)
+client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=10000)
+client.admin.command("ping")
+
 db = client["Política"]
 coleccion = db["Discursos"]
 
-
+print("Conectado a MongoDB")
 print("Cargando modelo de NLP...")
-modelo = SentenceTransformer('all-MiniLM-L6-v2')
-
+modelo = SentenceTransformer("all-MiniLM-L6-v2")
 
 CARPETA_CORPUS = "./DiscursosOriginales"
 

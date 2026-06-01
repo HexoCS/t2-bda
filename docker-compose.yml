@@ -1,9 +1,9 @@
-
 services:
   mongo-primario:
     image: mongo:7.0
     container_name: mongo-primario
-    command: ["--replSet", "rs0", "--bind_ip_all"]
+    hostname: mongo-primario
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
     ports:
       - "27017:27017"
     volumes:
@@ -14,7 +14,8 @@ services:
   mongo-secundario-1:
     image: mongo:7.0
     container_name: mongo-secundario-1
-    command: ["--replSet", "rs0", "--bind_ip_all"]
+    hostname: mongo-secundario-1
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
     ports:
       - "27018:27017"
     volumes:
@@ -25,13 +26,36 @@ services:
   mongo-secundario-2:
     image: mongo:7.0
     container_name: mongo-secundario-2
-    command: ["--replSet", "rs0", "--bind_ip_all"]
+    hostname: mongo-secundario-2
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
     ports:
       - "27019:27017"
     volumes:
       - mongo-secundario-2-data:/data/db
     networks:
       - mongo-cluster
+
+  jupyter:
+    image: jupyter/scipy-notebook:latest
+    container_name: jupyter-mongo
+    user: root
+    working_dir: /home/jovyan/work
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./:/home/jovyan/work
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      JUPYTER_ENABLE_LAB: "yes"
+      GRANT_SUDO: "yes"
+      MONGO_URI: "mongodb://mongo-primario:27017,mongo-secundario-1:27017,mongo-secundario-2:27017/?replicaSet=rs0"
+    networks:
+      - mongo-cluster
+    depends_on:
+      - mongo-primario
+      - mongo-secundario-1
+      - mongo-secundario-2
+    command: start-notebook.py --NotebookApp.token='' --NotebookApp.password='' --allow-root
 
 networks:
   mongo-cluster:

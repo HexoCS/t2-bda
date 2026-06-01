@@ -7800,7 +7800,7 @@ a.anchor-link {
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [9]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [24]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
@@ -7810,6 +7810,9 @@ a.anchor-link {
 <span class="kn">from</span><span class="w"> </span><span class="nn">pymongo</span><span class="w"> </span><span class="kn">import</span> <span class="n">MongoClient</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sentence_transformers</span><span class="w"> </span><span class="kn">import</span> <span class="n">SentenceTransformer</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics.pairwise</span><span class="w"> </span><span class="kn">import</span> <span class="n">cosine_similarity</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">hashlib</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pymongo.write_concern</span><span class="w"> </span><span class="kn">import</span> <span class="n">WriteConcern</span>
 </pre></div>
 </div>
 </div>
@@ -7820,7 +7823,7 @@ a.anchor-link {
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [15]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [10]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># 1. Configuración de conexión a MongoDB</span>
@@ -7862,7 +7865,7 @@ Documentos en Discursos: 679
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [16]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [11]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="o">!</span>sudo<span class="w"> </span>docker<span class="w"> </span>ps
@@ -7878,12 +7881,96 @@ Documentos en Discursos: 679
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>CONTAINER ID   IMAGE                           COMMAND                  CREATED          STATUS                    PORTS                                             NAMES
-e76a50478181   jupyter/scipy-notebook:latest   "tini -g -- start-no…"   16 minutes ago   Up 16 minutes (healthy)   0.0.0.0:8888-&gt;8888/tcp, [::]:8888-&gt;8888/tcp       jupyter-mongo
-c3e0c073468a   mongo:7.0                       "docker-entrypoint.s…"   16 minutes ago   Up 16 minutes             0.0.0.0:27017-&gt;27017/tcp, [::]:27017-&gt;27017/tcp   mongo-primario
-33785014c787   mongo:7.0                       "docker-entrypoint.s…"   16 minutes ago   Up 16 minutes             0.0.0.0:27019-&gt;27017/tcp, [::]:27019-&gt;27017/tcp   mongo-secundario-2
-504ee35e069e   mongo:7.0                       "docker-entrypoint.s…"   16 minutes ago   Up 16 minutes             0.0.0.0:27018-&gt;27017/tcp, [::]:27018-&gt;27017/tcp   mongo-secundario-1
+<pre>CONTAINER ID   IMAGE                           COMMAND                  CREATED        STATUS                   PORTS                                             NAMES
+e76a50478181   jupyter/scipy-notebook:latest   "tini -g -- start-no…"   18 hours ago   Up 5 minutes (healthy)   0.0.0.0:8888-&gt;8888/tcp, [::]:8888-&gt;8888/tcp       jupyter-mongo
+c3e0c073468a   mongo:7.0                       "docker-entrypoint.s…"   18 hours ago   Up 5 minutes             0.0.0.0:27017-&gt;27017/tcp, [::]:27017-&gt;27017/tcp   mongo-primario
+33785014c787   mongo:7.0                       "docker-entrypoint.s…"   18 hours ago   Up 5 minutes             0.0.0.0:27019-&gt;27017/tcp, [::]:27019-&gt;27017/tcp   mongo-secundario-2
+504ee35e069e   mongo:7.0                       "docker-entrypoint.s…"   18 hours ago   Up 5 minutes             0.0.0.0:27018-&gt;27017/tcp, [::]:27018-&gt;27017/tcp   mongo-secundario-1
 </pre>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=08c92f4b-00d1-40b4-8400-5c178665262f">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [12]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">mostrar_estado_replica_set</span><span class="p">():</span>
+    <span class="n">estado</span> <span class="o">=</span> <span class="n">cliente</span><span class="o">.</span><span class="n">admin</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="s2">"replSetGetStatus"</span><span class="p">)</span>
+    
+    <span class="n">df_estado</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span>
+        <span class="p">{</span>
+            <span class="s2">"nodo"</span><span class="p">:</span> <span class="n">m</span><span class="p">[</span><span class="s2">"name"</span><span class="p">],</span>
+            <span class="s2">"estado"</span><span class="p">:</span> <span class="n">m</span><span class="p">[</span><span class="s2">"stateStr"</span><span class="p">],</span>
+            <span class="s2">"health"</span><span class="p">:</span> <span class="n">m</span><span class="p">[</span><span class="s2">"health"</span><span class="p">]</span>
+        <span class="p">}</span>
+        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">estado</span><span class="p">[</span><span class="s2">"members"</span><span class="p">]</span>
+    <span class="p">])</span>
+    
+    <span class="k">return</span> <span class="n">df_estado</span>
+
+<span class="n">mostrar_estado_replica_set</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[12]:</div>
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html" tabindex="0">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+<thead>
+<tr style="text-align: right;">
+<th></th>
+<th>nodo</th>
+<th>estado</th>
+<th>health</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>0</th>
+<td>mongo-primario:27017</td>
+<td>PRIMARY</td>
+<td>1.0</td>
+</tr>
+<tr>
+<th>1</th>
+<td>mongo-secundario-1:27017</td>
+<td>SECONDARY</td>
+<td>1.0</td>
+</tr>
+<tr>
+<th>2</th>
+<td>mongo-secundario-2:27017</td>
+<td>SECONDARY</td>
+<td>1.0</td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 </div>
 </div>
@@ -7893,7 +7980,7 @@ c3e0c073468a   mongo:7.0                       "docker-entrypoint.s…"   16 min
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [17]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [29]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># 2. Cargar el mismo modelo de NLP usado para poblar la BD</span>
@@ -7953,13 +8040,6 @@ c3e0c073468a   mongo:7.0                       "docker-entrypoint.s…"   16 min
 </div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre>Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
-</pre>
-</div>
-</div>
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
 <pre>Loading weights:   0%|          | 0/103 [00:00&lt;?, ?it/s]</pre>
 </div>
@@ -7971,7 +8051,7 @@ c3e0c073468a   mongo:7.0                       "docker-entrypoint.s…"   16 min
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [18]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [19]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Primera consulta de ejemplo</span>
@@ -7993,7 +8073,7 @@ c3e0c073468a   mongo:7.0                       "docker-entrypoint.s…"   16 min
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>Ingresa tu consulta textual (o 'salir' para terminar):  educación pública y futuro de Chile
+<pre>Ingresa tu consulta textual (o 'salir' para terminar):  equidad en los derechos humanos
 </pre>
 </div>
 </div>
@@ -8001,42 +8081,50 @@ c3e0c073468a   mongo:7.0                       "docker-entrypoint.s…"   16 min
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
 <pre>
-Resultados Top 5 para: 'educación pública y futuro de Chile'
+Resultados Top 5 para: 'equidad en los derechos humanos'
 ============================================================
-1. Similitud Coseno: 0.6635 | ID (SHA-256): 61d2f0852bfc8ccf6752fa8f9d43b53b8af73aafef885aa229e184ca431af6d1
-   Extracto: Presidente Moreno, amigo Lenin, lo saludo con mucho cariño y quiero compartir nuestra solidaridad con el pueblo ecuatoriano que, al igual que el pueblo chileno, está sufriendo los embates de estas pan...
-
-2. Similitud Coseno: 0.6572 | ID (SHA-256): a6458b4fa6d85ad7d370dc28cf0f9425d5b4f4724447d39ab95a781bd5145801
+1. Similitud Coseno: 0.6174 | ID (SHA-256): 4303dad79e46173c8cfc0b10ddf5a23d8989ec27966894c7286167a8c8db088f
    Extracto: Muy buenos días:
 
  
 
-Quiero saludar con mucho cariño a la ministra de Educación, al presidente de la FIDE, a los directivos, pero principalmente a todos ustedes, que son los que durante muchas décadas...
-
-3. Similitud Coseno: 0.6558 | ID (SHA-256): a7ef922c0dc5595fbb8ee779baa00f73e07fc077fcd63a1d2e2eeeab93eebf94
-   Extracto: Muy buenas tardes: 
+Esto es un acto simple, pero con muchos símbolos y muchos significados.
 
  
 
-Tenemos el privilegio y el honor de recibir al Presidente del Gobierno español, don Pedro Sánchez, que además nos distingue, porque ésta es la primera visita que hace fuera del...
+Hoy estamos celebrando los 70 años desde que la humanidad, a través de Naciones Unidas, hizo la Declara...
 
-4. Similitud Coseno: 0.6462 | ID (SHA-256): 6e11345e04b7b08e214c0805c95813d868a2c4bcd6c570cdb2ccb0582a9de907
-   Extracto: Muy buenos días, Bonjour:
-
- 
-
-Hace poco más de tres semanas, dimos a conocer una Nueva Política de Migración en Chile, que reemplazó a una legislación que estaba absolutamente obsoleta y que era del a...
-
-5. Similitud Coseno: 0.6457 | ID (SHA-256): f7acfd781e97ee59d9097e5ed2a457a84f3ea5dde9caecd26a9c322d51041b20
-   Extracto: Señora Presidenta del Senado, señor Presidente de la Cámara de Diputados, honorables parlamentarios, distinguidas autoridades, queridos compatriotas:
+2. Similitud Coseno: 0.5698 | ID (SHA-256): 2de4b4f6ac8e7db12fc61233d79749fe6a38799225f0ae1418acad2e24982bdf
+   Extracto: Muy buenas tardes:
 
  
 
-Muy buenas noches:
+Nuestro Gobierno condena categóricamente los atropellos a los derechos humanos, en cualquier tiempo, en cualquier lugar y en cualquier circunstancia. 
 
  
 
-Quiero comenzar esta Cu...
+Condenamos tanto los a...
+
+3. Similitud Coseno: 0.5677 | ID (SHA-256): 8d408b4c0da96fde03d8b55589c940565300e5a5d6b38add42be36959963c29c
+   Extracto: Buenos días:
+
+ 
+
+Quiero expresar mi aprecio y valoración al informe de la Alta Comisionada para los Derechos Humanos de Naciones Unidas, Michelle Bachelet.
+
+ 
+
+Creo que es un informe necesario y un in...
+
+4. Similitud Coseno: 0.5476 | ID (SHA-256): 1fd7cc727362478212da7da88ebd14c13c179d2849a590bf12e4d248c43a83cb
+   Extracto: Hay momentos en que la historia se encuentra con una encrucijada, son los momentos estelares de la historia, y en esos momentos se prueba el temple de las personas y el temple de los pueblos.
+
+ 
+
+No s...
+
+5. Similitud Coseno: 0.5295 | ID (SHA-256): c5312dc5524b56d116de411a3673f20891dba24e2ea609c2aa53a298c43a0008
+   Extracto: Es indudable que en Venezuela no hay democracia, no hay Estado de derecho, no hay respeto por los derechos humanos ni tampoco están organizadas elecciones limpias, transparentes.  Y, por tanto, ningún...
 
 </pre>
 </div>
@@ -8059,7 +8147,7 @@ Quiero comenzar esta Cu...
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [19]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [20]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="o">!</span>sudo<span class="w"> </span>docker<span class="w"> </span>stop<span class="w"> </span>mongo-primario
@@ -8087,11 +8175,11 @@ Quiero comenzar esta Cu...
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [20]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [21]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="o">!</span>sudo<span class="w"> </span>docker<span class="w"> </span>ps
-<span class="o">!</span>sudo<span class="w"> </span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>mongo-secundario-1<span class="w"> </span>mongosh<span class="w"> </span>--eval<span class="w"> </span><span class="s2">"rs.status().members.map(m =&gt; ({name: m.name, stateStr: m.stateStr}))"</span>
+<span class="n">mostrar_estado_replica_set</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -8104,16 +8192,61 @@ Quiero comenzar esta Cu...
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>CONTAINER ID   IMAGE                           COMMAND                  CREATED          STATUS                    PORTS                                             NAMES
-e76a50478181   jupyter/scipy-notebook:latest   "tini -g -- start-no…"   18 minutes ago   Up 18 minutes (healthy)   0.0.0.0:8888-&gt;8888/tcp, [::]:8888-&gt;8888/tcp       jupyter-mongo
-33785014c787   mongo:7.0                       "docker-entrypoint.s…"   18 minutes ago   Up 18 minutes             0.0.0.0:27019-&gt;27017/tcp, [::]:27019-&gt;27017/tcp   mongo-secundario-2
-504ee35e069e   mongo:7.0                       "docker-entrypoint.s…"   18 minutes ago   Up 18 minutes             0.0.0.0:27018-&gt;27017/tcp, [::]:27018-&gt;27017/tcp   mongo-secundario-1
-[
-  { name: 'mongo-primario:27017', stateStr: '(not reachable/healthy)' },
-  { name: 'mongo-secundario-1:27017', stateStr: 'PRIMARY' },
-  { name: 'mongo-secundario-2:27017', stateStr: 'SECONDARY' }
-]
+<pre>CONTAINER ID   IMAGE                           COMMAND                  CREATED        STATUS                    PORTS                                             NAMES
+e76a50478181   jupyter/scipy-notebook:latest   "tini -g -- start-no…"   18 hours ago   Up 10 minutes (healthy)   0.0.0.0:8888-&gt;8888/tcp, [::]:8888-&gt;8888/tcp       jupyter-mongo
+33785014c787   mongo:7.0                       "docker-entrypoint.s…"   18 hours ago   Up 10 minutes             0.0.0.0:27019-&gt;27017/tcp, [::]:27019-&gt;27017/tcp   mongo-secundario-2
+504ee35e069e   mongo:7.0                       "docker-entrypoint.s…"   18 hours ago   Up 10 minutes             0.0.0.0:27018-&gt;27017/tcp, [::]:27018-&gt;27017/tcp   mongo-secundario-1
 </pre>
+</div>
+</div>
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[21]:</div>
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html" tabindex="0">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+<thead>
+<tr style="text-align: right;">
+<th></th>
+<th>nodo</th>
+<th>estado</th>
+<th>health</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>0</th>
+<td>mongo-primario:27017</td>
+<td>(not reachable/healthy)</td>
+<td>0.0</td>
+</tr>
+<tr>
+<th>1</th>
+<td>mongo-secundario-1:27017</td>
+<td>PRIMARY</td>
+<td>1.0</td>
+</tr>
+<tr>
+<th>2</th>
+<td>mongo-secundario-2:27017</td>
+<td>SECONDARY</td>
+<td>1.0</td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 </div>
 </div>
@@ -8123,10 +8256,11 @@ e76a50478181   jupyter/scipy-notebook:latest   "tini -g -- start-no…"   18 min
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [21]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [23]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="n">cliente</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">(</span><span class="n">MONGO_URI</span><span class="p">,</span> <span class="n">serverSelectionTimeoutMS</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Probando la Operación de lectura </span>
+<span class="n">cliente</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">(</span><span class="n">MONGO_URI</span><span class="p">,</span> <span class="n">serverSelectionTimeoutMS</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
 <span class="n">db</span> <span class="o">=</span> <span class="n">cliente</span><span class="p">[</span><span class="s2">"Política"</span><span class="p">]</span>
 <span class="n">coleccion</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="s2">"Discursos"</span><span class="p">]</span>
 
@@ -8144,7 +8278,7 @@ e76a50478181   jupyter/scipy-notebook:latest   "tini -g -- start-no…"   18 min
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>Ingresa tu consulta textual (o 'salir' para terminar):  educación pública y futuro de Chile
+<pre>Ingresa tu consulta textual (o 'salir' para terminar):  equidad en los derechos humanos
 </pre>
 </div>
 </div>
@@ -8152,42 +8286,230 @@ e76a50478181   jupyter/scipy-notebook:latest   "tini -g -- start-no…"   18 min
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
 <pre>
-Resultados Top 5 para: 'educación pública y futuro de Chile'
+Resultados Top 5 para: 'equidad en los derechos humanos'
 ============================================================
-1. Similitud Coseno: 0.6635 | ID (SHA-256): 61d2f0852bfc8ccf6752fa8f9d43b53b8af73aafef885aa229e184ca431af6d1
-   Extracto: Presidente Moreno, amigo Lenin, lo saludo con mucho cariño y quiero compartir nuestra solidaridad con el pueblo ecuatoriano que, al igual que el pueblo chileno, está sufriendo los embates de estas pan...
-
-2. Similitud Coseno: 0.6572 | ID (SHA-256): a6458b4fa6d85ad7d370dc28cf0f9425d5b4f4724447d39ab95a781bd5145801
+1. Similitud Coseno: 0.6174 | ID (SHA-256): 4303dad79e46173c8cfc0b10ddf5a23d8989ec27966894c7286167a8c8db088f
    Extracto: Muy buenos días:
 
  
 
-Quiero saludar con mucho cariño a la ministra de Educación, al presidente de la FIDE, a los directivos, pero principalmente a todos ustedes, que son los que durante muchas décadas...
-
-3. Similitud Coseno: 0.6558 | ID (SHA-256): a7ef922c0dc5595fbb8ee779baa00f73e07fc077fcd63a1d2e2eeeab93eebf94
-   Extracto: Muy buenas tardes: 
+Esto es un acto simple, pero con muchos símbolos y muchos significados.
 
  
 
-Tenemos el privilegio y el honor de recibir al Presidente del Gobierno español, don Pedro Sánchez, que además nos distingue, porque ésta es la primera visita que hace fuera del...
+Hoy estamos celebrando los 70 años desde que la humanidad, a través de Naciones Unidas, hizo la Declara...
 
-4. Similitud Coseno: 0.6462 | ID (SHA-256): 6e11345e04b7b08e214c0805c95813d868a2c4bcd6c570cdb2ccb0582a9de907
-   Extracto: Muy buenos días, Bonjour:
-
- 
-
-Hace poco más de tres semanas, dimos a conocer una Nueva Política de Migración en Chile, que reemplazó a una legislación que estaba absolutamente obsoleta y que era del a...
-
-5. Similitud Coseno: 0.6457 | ID (SHA-256): f7acfd781e97ee59d9097e5ed2a457a84f3ea5dde9caecd26a9c322d51041b20
-   Extracto: Señora Presidenta del Senado, señor Presidente de la Cámara de Diputados, honorables parlamentarios, distinguidas autoridades, queridos compatriotas:
+2. Similitud Coseno: 0.5698 | ID (SHA-256): 2de4b4f6ac8e7db12fc61233d79749fe6a38799225f0ae1418acad2e24982bdf
+   Extracto: Muy buenas tardes:
 
  
 
-Muy buenas noches:
+Nuestro Gobierno condena categóricamente los atropellos a los derechos humanos, en cualquier tiempo, en cualquier lugar y en cualquier circunstancia. 
 
  
 
-Quiero comenzar esta Cu...
+Condenamos tanto los a...
+
+3. Similitud Coseno: 0.5677 | ID (SHA-256): 8d408b4c0da96fde03d8b55589c940565300e5a5d6b38add42be36959963c29c
+   Extracto: Buenos días:
+
+ 
+
+Quiero expresar mi aprecio y valoración al informe de la Alta Comisionada para los Derechos Humanos de Naciones Unidas, Michelle Bachelet.
+
+ 
+
+Creo que es un informe necesario y un in...
+
+4. Similitud Coseno: 0.5476 | ID (SHA-256): 1fd7cc727362478212da7da88ebd14c13c179d2849a590bf12e4d248c43a83cb
+   Extracto: Hay momentos en que la historia se encuentra con una encrucijada, son los momentos estelares de la historia, y en esos momentos se prueba el temple de las personas y el temple de los pueblos.
+
+ 
+
+No s...
+
+5. Similitud Coseno: 0.5295 | ID (SHA-256): c5312dc5524b56d116de411a3673f20891dba24e2ea609c2aa53a298c43a0008
+   Extracto: Es indudable que en Venezuela no hay democracia, no hay Estado de derecho, no hay respeto por los derechos humanos ni tampoco están organizadas elecciones limpias, transparentes.  Y, por tanto, ningún...
+
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=00943538-44d8-4ca7-8288-b59acb94a910">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [26]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Probando la Operación de escritura</span>
+<span class="c1"># Usamos write concern majority para demostrar escritura replicada</span>
+<span class="n">db_majority</span> <span class="o">=</span> <span class="n">cliente</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span>
+    <span class="s2">"Política"</span><span class="p">,</span>
+    <span class="n">write_concern</span><span class="o">=</span><span class="n">WriteConcern</span><span class="p">(</span><span class="n">w</span><span class="o">=</span><span class="s2">"majority"</span><span class="p">,</span> <span class="n">wtimeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
+<span class="p">)</span>
+
+<span class="n">coleccion_majority</span> <span class="o">=</span> <span class="n">db_majority</span><span class="p">[</span><span class="s2">"Discursos"</span><span class="p">]</span>
+
+<span class="n">texto_nuevo</span> <span class="o">=</span> <span class="s2">"""</span>
+<span class="s2">Discurso de prueba de alta disponibilidad.</span>
+
+<span class="s2">Este documento fue insertado mientras el nodo mongo-primario estaba detenido.</span>
+<span class="s2">La escritura fue recibida por el nuevo nodo primario elegido automáticamente</span>
+<span class="s2">por el Replica Set de MongoDB.</span>
+<span class="s2">"""</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+<span class="n">hash_sha256</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">(</span><span class="n">texto_nuevo</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">"utf-8"</span><span class="p">))</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+
+<span class="n">embedding_nuevo</span> <span class="o">=</span> <span class="n">modelo</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">texto_nuevo</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+<span class="n">documento_nuevo</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">"_id"</span><span class="p">:</span> <span class="n">hash_sha256</span><span class="p">,</span>
+    <span class="s2">"texto"</span><span class="p">:</span> <span class="n">texto_nuevo</span><span class="p">,</span>
+    <span class="s2">"embedding"</span><span class="p">:</span> <span class="n">embedding_nuevo</span><span class="p">,</span>
+    <span class="s2">"metadata"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"tipo"</span><span class="p">:</span> <span class="s2">"prueba_alta_disponibilidad_escritura"</span><span class="p">,</span>
+        <span class="s2">"fecha_insercion"</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
+        <span class="s2">"primario_original_caido"</span><span class="p">:</span> <span class="kc">True</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">resultado</span> <span class="o">=</span> <span class="n">coleccion_majority</span><span class="o">.</span><span class="n">replace_one</span><span class="p">(</span>
+    <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">hash_sha256</span><span class="p">},</span>
+    <span class="n">documento_nuevo</span><span class="p">,</span>
+    <span class="n">upsert</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Documento insertado correctamente."</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"ID SHA-256:"</span><span class="p">,</span> <span class="n">hash_sha256</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Upserted ID:"</span><span class="p">,</span> <span class="n">resultado</span><span class="o">.</span><span class="n">upserted_id</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>Documento insertado correctamente.
+ID SHA-256: 6a8f9fa7fa9fd4ff874b7f09d8f3f99336dfae2625f7e846a5be60637a4b430c
+Upserted ID: 6a8f9fa7fa9fd4ff874b7f09d8f3f99336dfae2625f7e846a5be60637a4b430c
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=65a35bcb-6d4f-489f-b13f-14e0bc1a8135">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [30]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Lectura del documento insertado</span>
+<span class="n">doc</span> <span class="o">=</span> <span class="n">coleccion</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">hash_sha256</span><span class="p">})</span>
+
+<span class="k">if</span> <span class="n">doc</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Documento encontrado."</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"ID:"</span><span class="p">,</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Texto:"</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s2">"texto"</span><span class="p">])</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"No se encontró el documento."</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>Documento encontrado.
+ID: 6a8f9fa7fa9fd4ff874b7f09d8f3f99336dfae2625f7e846a5be60637a4b430c
+Texto:
+Discurso de prueba de alta disponibilidad.
+
+Este documento fue insertado mientras el nodo mongo-primario estaba detenido.
+La escritura fue recibida por el nuevo nodo primario elegido automáticamente
+por el Replica Set de MongoDB.
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=48a95509-a0fd-45bb-86f7-d37aab0528a6">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [32]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">buscar_discursos</span><span class="p">(</span><span class="s2">"alta disponibilidad escritura replica set"</span><span class="p">,</span> <span class="n">top_k</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>
+Resultados Top 5 para: 'alta disponibilidad escritura replica set'
+============================================================
+1. Similitud Coseno: 0.4902 | ID (SHA-256): 6a8f9fa7fa9fd4ff874b7f09d8f3f99336dfae2625f7e846a5be60637a4b430c
+   Extracto: Discurso de prueba de alta disponibilidad.
+
+Este documento fue insertado mientras el nodo mongo-primario estaba detenido.
+La escritura fue recibida por el nuevo nodo primario elegido automáticamente
+p...
+
+2. Similitud Coseno: 0.2552 | ID (SHA-256): 4e017783e202b9cd693553e1eb88f46c2a59276a72d16d0e35f3c9390a9516e5
+   Extracto: Muchas gracias.
+
+ 
+
+Bueno, es verdad, vamos a organizar la próxima reunión de la COP25 en Santiago y probablemente es la última oportunidad que tenemos para cambiar el curso del mundo en este respecto...
+
+3. Similitud Coseno: 0.2513 | ID (SHA-256): 7d0d2c57193f473db26be4e6c8c39ac0e85bc0f6feb39fc3b4aca5569564017b
+   Extracto: Queridos compatriotas:
+
+ 
+
+Hoy, 5 de abril, nos hemos reunido para recordar y conmemorar el Bicentenario de la Batalla de Maipú, que fue la batalla decisiva que selló la Independencia de nuestro país ...
+
+4. Similitud Coseno: 0.2459 | ID (SHA-256): 6396b4eb95a5b586c06c49a8d4bca32c371774b1f62456f040129e5b9ead6bff
+   Extracto: Muy buenas tardes:
+
+ 
+
+Primero que todo quiero decirles que nos sentimos profundamente orgullosos de todos y cada uno de ustedes, porque no solamente dieron una demostración de sus habilidades y sus p...
+
+5. Similitud Coseno: 0.2329 | ID (SHA-256): 8319a14a4ef9b484e746f9c94136ed4a67a96ece88c82901ca6601a066e74db3
+   Extracto: Muy buenos días:
+
+ 
+
+Quiero compartir con ustedes algunas reflexiones.
+
+ 
+
+En primer lugar, estamos en esta maravillosa comuna de Requínoa, en Minera Valle Central, las cifras que ha dado su gerente s...
 
 </pre>
 </div>
@@ -8210,13 +8532,13 @@ Quiero comenzar esta Cu...
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [22]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [33]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="o">!</span>sudo<span class="w"> </span>docker<span class="w"> </span>start<span class="w"> </span>mongo-primario
 <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
 <span class="o">!</span>sudo<span class="w"> </span>docker<span class="w"> </span>ps
-<span class="o">!</span>sudo<span class="w"> </span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>mongo-secundario-1<span class="w"> </span>mongosh<span class="w"> </span>--eval<span class="w"> </span><span class="s2">"rs.status().members.map(m =&gt; ({name: m.name, stateStr: m.stateStr}))"</span>
+<span class="n">mostrar_estado_replica_set</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -8230,16 +8552,97 @@ Quiero comenzar esta Cu...
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
 <pre>mongo-primario
-CONTAINER ID   IMAGE                           COMMAND                  CREATED          STATUS                    PORTS                                             NAMES
-e76a50478181   jupyter/scipy-notebook:latest   "tini -g -- start-no…"   19 minutes ago   Up 19 minutes (healthy)   0.0.0.0:8888-&gt;8888/tcp, [::]:8888-&gt;8888/tcp       jupyter-mongo
-c3e0c073468a   mongo:7.0                       "docker-entrypoint.s…"   19 minutes ago   Up 10 seconds             0.0.0.0:27017-&gt;27017/tcp, [::]:27017-&gt;27017/tcp   mongo-primario
-33785014c787   mongo:7.0                       "docker-entrypoint.s…"   19 minutes ago   Up 19 minutes             0.0.0.0:27019-&gt;27017/tcp, [::]:27019-&gt;27017/tcp   mongo-secundario-2
-504ee35e069e   mongo:7.0                       "docker-entrypoint.s…"   19 minutes ago   Up 19 minutes             0.0.0.0:27018-&gt;27017/tcp, [::]:27018-&gt;27017/tcp   mongo-secundario-1
-[
-  { name: 'mongo-primario:27017', stateStr: 'SECONDARY' },
-  { name: 'mongo-secundario-1:27017', stateStr: 'PRIMARY' },
-  { name: 'mongo-secundario-2:27017', stateStr: 'SECONDARY' }
-]
+CONTAINER ID   IMAGE                           COMMAND                  CREATED        STATUS                    PORTS                                             NAMES
+e76a50478181   jupyter/scipy-notebook:latest   "tini -g -- start-no…"   18 hours ago   Up 16 minutes (healthy)   0.0.0.0:8888-&gt;8888/tcp, [::]:8888-&gt;8888/tcp       jupyter-mongo
+c3e0c073468a   mongo:7.0                       "docker-entrypoint.s…"   18 hours ago   Up 10 seconds             0.0.0.0:27017-&gt;27017/tcp, [::]:27017-&gt;27017/tcp   mongo-primario
+33785014c787   mongo:7.0                       "docker-entrypoint.s…"   18 hours ago   Up 16 minutes             0.0.0.0:27019-&gt;27017/tcp, [::]:27019-&gt;27017/tcp   mongo-secundario-2
+504ee35e069e   mongo:7.0                       "docker-entrypoint.s…"   18 hours ago   Up 16 minutes             0.0.0.0:27018-&gt;27017/tcp, [::]:27018-&gt;27017/tcp   mongo-secundario-1
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[33]:</div>
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html" tabindex="0">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+<thead>
+<tr style="text-align: right;">
+<th></th>
+<th>nodo</th>
+<th>estado</th>
+<th>health</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>0</th>
+<td>mongo-primario:27017</td>
+<td>SECONDARY</td>
+<td>1.0</td>
+</tr>
+<tr>
+<th>1</th>
+<td>mongo-secundario-1:27017</td>
+<td>PRIMARY</td>
+<td>1.0</td>
+</tr>
+<tr>
+<th>2</th>
+<td>mongo-secundario-2:27017</td>
+<td>SECONDARY</td>
+<td>1.0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=24d221f6-b089-4a0c-bcd9-265155a5feb9">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [34]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">doc</span> <span class="o">=</span> <span class="n">coleccion</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">hash_sha256</span><span class="p">})</span>
+
+<span class="k">if</span> <span class="n">doc</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Documento sigue disponible después de reactivar mongo-primario."</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"ID:"</span><span class="p">,</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Metadata:"</span><span class="p">,</span> <span class="n">doc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"metadata"</span><span class="p">,</span> <span class="p">{}))</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Documento no encontrado."</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>Documento sigue disponible después de reactivar mongo-primario.
+ID: 6a8f9fa7fa9fd4ff874b7f09d8f3f99336dfae2625f7e846a5be60637a4b430c
+Metadata: {'tipo': 'prueba_alta_disponibilidad_escritura', 'fecha_insercion': '2026-06-01T21:28:39.274767', 'primario_original_caido': True}
 </pre>
 </div>
 </div>
